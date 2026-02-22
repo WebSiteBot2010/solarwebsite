@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar – Discord Server</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="page">
+    <div class="page-inner">
+      <header class="header">
+        <div class="brand">
+          <div class="brand-logo">S</div>
+          <div class="brand-text">
+            <div class="brand-name">Solar</div>
+            <div class="brand-sub">Discord server • Community & tools</div>
+          </div>
+        </div>
+        <div id="auth-buttons"></div>
+      </header>
+
+      <main class="main">
+        <section class="inner-page">
+          <p class="inner-sub">Un server Discord pensato per chi vuole qualcosa di serio.</p>
+          <h1 class="inner-title">Il tuo nuovo punto fisso su Discord.</h1>
+          <p class="inner-sub">
+            Solar è un server Discord costruito per community, staff e progetti che vogliono ordine,
+            automazioni e un ambiente curato.
+          </p>
+
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="https://discord.gg/il-tuo-invito" class="btn-primary" target="_blank">Entra su Solar →</a>
+            <a href="#sezioni" class="btn-ghost">Scopri cosa offre</a>
+          </div>
+
+          <section id="sezioni" class="solar-sections">
+            <div class="section-card">
+              <h3>Wiki</h3>
+              <p>Guide e documentazione per usare Solar al meglio.</p>
+            </div>
+            <div class="section-card">
+              <h3>Regole</h3>
+              <p>Regolamento completo del server Solar.</p>
+            </div>
+            <div class="section-card">
+              <h3>FAQ</h3>
+              <p>Domande frequenti e risposte rapide.</p>
+            </div>
+            <div class="section-card">
+              <h3>Candidature</h3>
+              <p>Invia la tua candidatura per entrare nello staff.</p>
+            </div>
+          </section>
+        </section>
+
+        <aside>
+          <div class="section-card">
+            <h3>Solar • Hub</h3>
+            <p class="inner-sub">Accesso rapido alle sezioni principali.</p>
+            <div class="solar-sections" style="grid-template-columns:1fr;">
+              <a href="regolamento.html" class="section-card">
+                <h3>Regolamento</h3>
+                <p>Leggi le regole prima di entrare.</p>
+              </a>
+              <a href="candidature.html" class="section-card">
+                <h3>Candidature Staff</h3>
+                <p>Compila il modulo per candidarti.</p>
+              </a>
+              <a href="admin" class="section-card">
+                <h3>Pannello Staff</h3>
+                <p>Accesso riservato allo staff autorizzato.</p>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <span>© <span id="year"></span> Solar • Discord server</span>
+        <div class="footer-links">
+          <a href="https://discord.gg/il-tuo-invito" target="_blank">Entra su Discord</a>
+          <span>•</span>
+          <a href="regolamento.html">Regolamento</a>
+          <span>•</span>
+          <a href="candidature.html">Candidature</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    fetch("/session")
+      .then(r => r.json())
+      .then(data => {
+        const c = document.getElementById("auth-buttons");
+        if (data.logged) {
+          c.innerHTML = `
+            <span style="font-size:12px; color:#9ca3af;">Ciao, ${data.username}</span>
+            <a href="/logout" class="btn-ghost">Logout</a>
+          `;
+        } else {
+          c.innerHTML = `
+            <a href="/login" class="btn-discord">Accedi con Discord</a>
+          `;
+        }
+      });
+  </script>
+</body>
+</html>

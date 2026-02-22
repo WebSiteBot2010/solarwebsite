@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pannello Staff • Solar</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="page-inner inner-page">
+      <header class="header" style="margin-bottom:16px;">
+        <div class="brand">
+          <div class="brand-logo">S</div>
+          <div class="brand-text">
+            <div class="brand-name">Solar</div>
+            <div class="brand-sub">Pannello Staff</div>
+          </div>
+        </div>
+        <div id="admin-auth"></div>
+      </header>
+
+      <h1 class="inner-title">Candidature Staff</h1>
+      <p class="inner-sub">
+        Visualizza e gestisci le candidature inviate dal sito. Solo utenti autorizzati possono vedere questa pagina.
+      </p>
+
+      <div id="admin-content">
+        <p class="inner-sub">Caricamento in corso...</p>
+      </div>
+
+      <a href="index.html" class="btn-home">← Torna alla Home</a>
+    </div>
+  </div>
+
+  <script>
+    async function loadSession() {
+      const res = await fetch("/session");
+      const data = await res.json();
+      const auth = document.getElementById("admin-auth");
+
+      if (!data.logged) {
+        auth.innerHTML = '<a href="/login" class="btn-discord">Accedi con Discord</a>';
+        document.getElementById("admin-content").innerHTML =
+          '<p class="inner-sub" style="color:#ef4444;">Devi effettuare l\'accesso con Discord per vedere le candidature.</p>';
+        return null;
+      }
+
+      auth.innerHTML = `
+        <span style="font-size:12px; color:#9ca3af;">${data.username}</span>
+        <a href="/logout" class="btn-ghost">Logout</a>
+      `;
+      return data;
+    }
+
+    async function loadCandidature() {
+      const content = document.getElementById("admin-content");
+      try {
+        const res = await fetch("/api/candidature");
+        if (res.status === 401 || res.status === 403) {
+          content.innerHTML =
+            '<p class="inner-sub" style="color:#ef4444;">Non sei autorizzato a visualizzare questa pagina.</p>';
+          return;
+        }
+        const list = await res.json();
+        if (!list.length) {
+          content.innerHTML = '<p class="inner-sub">Nessuna candidatura presente al momento.</p>';
+          return;
+        }
+
+        const container = document.createElement("div");
+        container.className = "admin-list";
+
+        list
+          .slice()
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .forEach(c => {
+            const card = document.createElement("div");
+            card.className = "admin-card";
+
+            const statusClass = "status-" + c.status;
+            const statusLabel =
+              c.status === "accepted" ? "Accettata" :
+              c.status === "rejected" ? "Rifiutata" :
+              "In revisione";
+
+            card.innerHTML = `
+              <div class="admin-card-header">
+                <div>
+                  <strong>#${c.id}</strong> • ${c.username || "Sconosciuto"}
+                </div>
+                <span class="badge ${statusClass}">${statusLabel}</span>
+              </div>
+              <div class="admin-card-body">
+                <div><strong>Età:</strong> ${c.eta || "N/D"}</div>
+                <div><strong>Disponibilità:</strong> ${c.disponibilita || "N/D"}</div>
+                <div><strong>Motivazione:</strong> ${c.motivazione || "N/D"}</div>
+                <div><strong>Scenario:</strong> ${c.scenario || "N/D"}</div>
+              </div>
+              <div class="admin-card-footer">
+                <button class="btn-status accepted" data-id="${c.id}" data-status="accepted">Accetta</button>
+                <button class="btn-status rejected" data-id="${c.id}" data-status="rejected">Rifiuta</button>
+                <button class="btn-status" data-id="${c.id}" data-status="in_review">In revisione</button>
+              </div>
+            `;
+
+            container.appendChild(card);
+          });
+
+        content.innerHTML = "";
+        content.appendChild(container);
+
+        content.querySelectorAll(".btn-status").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-id");
+            const status = btn.getAttribute("data-status");
+            await fetch(`/api/candidature/${id}/status`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status })
+            });
+            loadCandidature();
+          });
+        });
+      } catch (e) {
+        content.innerHTML =
+          '<p class="inner-sub" style="color:#ef4444;">Errore nel caricamento delle candidature.</p>';
+      }
+    }
+
+    (async () => {
+      await loadSession();
+      await loadCandidature();
+    })();
+  </script>
+</body>
+</html>

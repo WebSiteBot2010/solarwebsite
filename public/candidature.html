@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candidatura Staff • Solar</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="page-inner inner-page">
+      <h1 class="inner-title">Candidatura Staff</h1>
+      <p class="inner-sub">
+        Compila il modulo per candidarti nello staff di Solar. Rispondi in modo chiaro e completo.
+      </p>
+
+      <div id="msg"></div>
+
+      <div class="form-card">
+        <h2 style="font-size:18px; margin-bottom:10px;">Requisiti</h2>
+        <ul>
+          <li>Età minima: 16 anni</li>
+          <li>Disponibilità di almeno 10 ore settimanali</li>
+          <li>Buona conoscenza della lingua italiana</li>
+          <li>Atteggiamento positivo e collaborativo</li>
+        </ul>
+      </div>
+
+      <form class="form-card" action="/candidature" method="POST">
+        <h2 style="font-size:18px; margin-bottom:10px;">Modulo di Candidatura</h2>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Nome utente Discord</label>
+          <input class="form-input" type="text" id="username" name="username" placeholder="Es: Nome#0000" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="eta">Età</label>
+          <input class="form-input" type="number" id="eta" name="eta" min="13" max="99" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="disponibilita">Disponibilità oraria</label>
+          <textarea class="form-textarea" id="disponibilita" name="disponibilita" placeholder="Es: Lunedì-Venerdì 15:00-20:00, Weekend tutto il giorno" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="motivazione">Perché vuoi entrare nello staff?</label>
+          <textarea class="form-textarea" id="motivazione" name="motivazione" placeholder="Spiegaci la tua motivazione e cosa puoi portare al team..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="scenario">Scenario pratico</label>
+          <textarea class="form-textarea" id="scenario" name="scenario" placeholder="Un utente sta spammando e insulta altri membri. Come gestiresti la situazione? Descrivi i passaggi che seguiresti..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Invia Candidatura</button>
+      </form>
+
+      <p class="inner-sub" style="margin-top:10px;">
+        Riceverai una risposta entro circa 7 giorni tramite messaggio diretto su Discord.
+        Se non ricevi risposta entro 14 giorni, considera la candidatura rifiutata.
+      </p>
+
+      <a href="index.html" class="btn-home">← Torna alla Home</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const msg = document.getElementById("msg");
+    if (params.get("ok") === "1") {
+      msg.innerHTML = '<p class="inner-sub" style="color:#22c55e;">Candidatura inviata correttamente.</p>';
+    }
+    if (params.get("error") === "1") {
+      msg.innerHTML = '<p class="inner-sub" style="color:#ef4444;">Si è verificato un errore. Riprova.</p>';
+    }
+  </script>
+</body>
+</html>
